@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from view import view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('classify/', view.classify_inquiry)
 ]

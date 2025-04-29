@@ -98,6 +98,12 @@ def main():
     training_args.eval_steps = params['eval_steps']
     training_args.warmup_ratio = params['warmup_ratio']
 
+    # 텐서보드 설정
+    timestamp = str(int(time.time()))
+    training_args.output_dir = os.path.abspath((os.path.join(training_args.output_dir, timestamp)))
+    training_args.logging_dir = os.path.join(training_args.output_dir, "runs")
+    training_args.report_to = ["tensorboard"]
+
     # Setup logging
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",

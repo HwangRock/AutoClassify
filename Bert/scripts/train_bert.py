@@ -92,6 +92,7 @@ def main():
     with open('../config/tc_transformers.yaml', 'r', encoding="UTF8") as f:
         params = yaml.safe_load(f)
 
+    # 학습 파라미터 설정
     training_args.num_train_epochs = params['max_epochs']
     training_args.evaluation_strategy = "steps"
     training_args.save_steps = params['save_steps']
@@ -132,28 +133,15 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    # In distributed training, the load_dataset function guarantees that only one local process can concurrently
-    # download the dataset.
-    # Downloading and loading xnli dataset from the hub.
-
+    # 학습 데이터 설정
     data_params = params['data_files']
 
-    # 데이터 로드
-    if params['task'] == "SST2":  # huggingface datasets로 부터 xnli dataset load
-        train_dataset = datasets.load_dataset("nyu-mll/glue", "sst2", split="train", cache_dir=model_args.cache_dir,)
-        eval_dataset = datasets.load_dataset("nyu-mll/glue", "sst2", split="validation", cache_dir=model_args.cache_dir,)
-        label_list = train_dataset.features["label"].names
-    elif params['task'] == "COLA":  # huggingface datasets로 부터 qnli dataset load
-        train_dataset = datasets.load_dataset("nyu-mll/glue", "cola", split="train", cache_dir=model_args.cache_dir,)
-        eval_dataset = datasets.load_dataset("nyu-mll/gluee", "cola", split="validation", cache_dir=model_args.cache_dir,)
-        label_list = train_dataset.features["label"].names
-    elif params['task'] == "MR":  # huggingface datasets로 부터 wnli dataset load
-        data_files = {}
-        data_files["train"] = data_params['train_file']
-        data_files["validation"] = data_params['val_file']
-        train_dataset = datasets.load_dataset("csv", data_files=data_files, split="train")
-        eval_dataset = datasets.load_dataset("csv", data_files=data_files, split="validation")
-        label_list = train_dataset.unique("label")
+    data_files = {}
+    data_files["train"] = data_params['train_file']
+    data_files["validation"] = data_params['val_file']
+    train_dataset = datasets.load_dataset("csv", data_files=data_files, split="train")
+    eval_dataset = datasets.load_dataset("csv", data_files=data_files, split="validation")
+    label_list = train_dataset.unique("label")
 
     # Labels
     num_labels = len(label_list)

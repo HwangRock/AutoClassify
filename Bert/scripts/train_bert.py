@@ -211,15 +211,23 @@ def main():
             desc="Running tokenizer on validation dataset",
         )
 
-    # Get the metric function
-    metric = evaluate.load("accuracy")
+    # Get the metric functions
+    accuracy = evaluate.load("accuracy")
+    f1 = evaluate.load("f1")
+    recall = evaluate.load("recall")
+    precision = evaluate.load("precision")
 
-    # You can define your custom compute_metrics function. It takes an `EvalPrediction` object (a namedtuple with a
-    # predictions and label_ids field) and has to return a dictionary string to float.
+    # Custom metric computation function
     def compute_metrics(p: EvalPrediction):
         preds = p.predictions[0] if isinstance(p.predictions, tuple) else p.predictions
         preds = np.argmax(preds, axis=1)
-        return metric.compute(predictions=preds, references=p.label_ids)
+
+        return {
+            "accuracy": accuracy.compute(predictions=preds, references=p.label_ids)["accuracy"],
+            "f1": f1.compute(predictions=preds, references=p.label_ids, average="weighted")["f1"],
+            "recall": recall.compute(predictions=preds, references=p.label_ids, average="weighted")["recall"],
+            "precision": precision.compute(predictions=preds, references=p.label_ids, average="weighted")["precision"],
+        }
 
     # Data collator will default to DataCollatorWithPadding, so we change it if we already did the padding.
     if data_args.pad_to_max_length:

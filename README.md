@@ -9,4 +9,4 @@ AI를 활용한 업무 자동화 프로젝트입니다.
 여기서 인력이 '읽고 분류'에 긴 시간을 투자하게 되므로, 이 과정을 AI가 자동으로 해주면 인력을 더 유익한 곳에 활용할 수 있게 됩니다.
 
 ## Architecture
-![](./presentation/ai_server.png)
+![](./presentation/aiserver.png)
